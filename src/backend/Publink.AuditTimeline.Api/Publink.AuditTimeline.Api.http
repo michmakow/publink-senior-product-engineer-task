@@ -1,0 +1,6 @@
+@Publink.AuditTimeline.Api_HostAddress = http://localhost:5201
+
+GET {{Publink.AuditTimeline.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

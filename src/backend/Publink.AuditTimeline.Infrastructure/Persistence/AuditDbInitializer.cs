@@ -1,0 +1,534 @@
+using Microsoft.EntityFrameworkCore;
+using Publink.AuditTimeline.Domain.Audit;
+
+namespace Publink.AuditTimeline.Infrastructure.Persistence;
+
+public sealed class AuditDbInitializer
+{
+    private readonly AuditDbContext _dbContext;
+
+    public AuditDbInitializer(AuditDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
+    public async Task InitializeAsync(CancellationToken cancellationToken = default)
+    {
+        if (!await _dbContext.Database.CanConnectAsync(cancellationToken))
+        {
+            await _dbContext.Database.EnsureCreatedAsync(cancellationToken);
+        }
+
+        var contracts = new[]
+        {
+            new AuditedContract("123", "UM-2026-001", AtUtc(2026, 1, 10, 8, 30), "system"),
+            new AuditedContract("456", "UM-2026-002", AtUtc(2026, 2, 14, 12, 0), "system"),
+            new AuditedContract("789", "UM-2026-003", AtUtc(2026, 1, 20, 10, 15), "karol.lis"),
+            new AuditedContract("321", "UM-2026-004", AtUtc(2026, 3, 1, 9, 0), "alicja.kaczmarek"),
+            new AuditedContract("654", "UM-2026-005", AtUtc(2026, 4, 9, 13, 30), "tomasz.wojcik"),
+            new AuditedContract("987", "UM-2025-099", AtUtc(2025, 12, 15, 15, 45), "system"),
+            new AuditedContract("222", "UM-2026-006", AtUtc(2026, 7, 1, 8, 20), "system"),
+            new AuditedContract("333", "UM-2026-007", AtUtc(2026, 8, 3, 11, 5), "barbara.lewandowska"),
+            new AuditedContract("NO-CHANGES", "UM-2026-000", AtUtc(2026, 2, 3, 10, 0), "ewa.wisniewska"),
+            new AuditedContract("UNKNOWN", "UM-2026-404", AtUtc(2026, 3, 5, 9, 45), "system")
+        };
+
+        var entries = new[]
+        {
+            new AuditLogEntry(
+                "audit-001",
+                "123",
+                "contract-123",
+                AuditEntityType.ContractHeaderEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 1, 12, 9, 15),
+                "anna.nowak",
+                "Status",
+                null,
+                "Przygotowana"),
+            new AuditLogEntry(
+                "audit-002",
+                "123",
+                "payment-1",
+                AuditEntityType.PaymentScheduleEntity,
+                AuditChangeType.Modified,
+                AtUtc(2026, 6, 18, 14, 30),
+                "anna.nowak",
+                "DueDate",
+                "2026-07-01",
+                "2026-07-15"),
+            new AuditLogEntry(
+                "audit-003",
+                "123",
+                "annex-1",
+                AuditEntityType.AnnexHeaderEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 6, 12, 9, 10),
+                "jan.kowalski",
+                "AnnexNumber",
+                null,
+                "AN-1/2026"),
+            new AuditLogEntry(
+                "audit-004",
+                "123",
+                "funding-1",
+                AuditEntityType.ContractFundingEntity,
+                AuditChangeType.Modified,
+                AtUtc(2026, 5, 20, 11, 40),
+                "marta.zielinska",
+                "FundingSource",
+                "Budżet podstawowy",
+                "Rezerwa celowa"),
+            new AuditLogEntry(
+                "audit-005",
+                "123",
+                "file-7",
+                AuditEntityType.FileEntity,
+                AuditChangeType.Deleted,
+                AtUtc(2026, 4, 2, 16, 5),
+                "jan.kowalski",
+                "FileName",
+                "roboczy-harmonogram.xlsx",
+                null),
+            new AuditLogEntry(
+                "audit-006",
+                "123",
+                "invoice-4",
+                AuditEntityType.InvoiceEntity,
+                AuditChangeType.Modified,
+                AtUtc(2026, 3, 19, 13, 0),
+                "anna.nowak",
+                "InvoiceNumber",
+                "FV/03/12",
+                "FV/03/12-KOR"),
+            new AuditLogEntry(
+                "audit-008",
+                "456",
+                "contract-456",
+                AuditEntityType.ContractHeaderEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 2, 14, 12, 10),
+                "piotr.mazur",
+                "Status",
+                null,
+                "Przygotowana"),
+            new AuditLogEntry(
+                "audit-009",
+                "456",
+                "payment-456-1",
+                AuditEntityType.PaymentScheduleEntity,
+                AuditChangeType.Modified,
+                AtUtc(2026, 6, 22, 10, 45),
+                "anna.nowak",
+                "DueDate",
+                "2026-08-05",
+                "2026-08-20"),
+            new AuditLogEntry(
+                "audit-010",
+                "456",
+                "funding-456-1",
+                AuditEntityType.ContractFundingEntity,
+                AuditChangeType.Modified,
+                AtUtc(2026, 5, 27, 15, 20),
+                "marta.zielinska",
+                "FundingSource",
+                "Rezerwa celowa",
+                "Budżet inwestycyjny"),
+            new AuditLogEntry(
+                "audit-011",
+                "789",
+                "contract-789",
+                AuditEntityType.ContractHeaderEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 1, 20, 10, 25),
+                "karol.lis",
+                "Status",
+                null,
+                "Przygotowana"),
+            new AuditLogEntry(
+                "audit-012",
+                "789",
+                "contract-789",
+                AuditEntityType.ContractHeaderEntity,
+                AuditChangeType.Modified,
+                AtUtc(2026, 1, 25, 14, 0),
+                "karol.lis",
+                "ContractorName",
+                "Zakład Usług Komunalnych",
+                "Zakład Usług Komunalnych Sp. z o.o."),
+            new AuditLogEntry(
+                "audit-013",
+                "789",
+                "annex-789-1",
+                AuditEntityType.AnnexHeaderEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 2, 2, 9, 35),
+                "ewa.wisniewska",
+                "AnnexNumber",
+                null,
+                "AN-1/2026"),
+            new AuditLogEntry(
+                "audit-014",
+                "789",
+                "annex-change-789-1",
+                AuditEntityType.AnnexChangeEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 2, 3, 13, 10),
+                "ewa.wisniewska",
+                "ContractValue",
+                null,
+                "+25 000 PLN"),
+            new AuditLogEntry(
+                "audit-015",
+                "789",
+                "file-789-1",
+                AuditEntityType.FileEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 2, 4, 16, 50),
+                "jan.kowalski",
+                "FileName",
+                null,
+                "aneks-podpisany.pdf"),
+            new AuditLogEntry(
+                "audit-016",
+                "789",
+                "payment-789-1",
+                AuditEntityType.PaymentScheduleEntity,
+                AuditChangeType.Modified,
+                AtUtc(2026, 2, 15, 12, 25),
+                "anna.nowak",
+                "DueDate",
+                "2026-03-10",
+                "2026-03-17"),
+            new AuditLogEntry(
+                "audit-017",
+                "321",
+                "contract-321",
+                AuditEntityType.ContractHeaderEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 3, 1, 9, 12),
+                "alicja.kaczmarek",
+                "Status",
+                null,
+                "W realizacji"),
+            new AuditLogEntry(
+                "audit-018",
+                "321",
+                "invoice-321-1",
+                AuditEntityType.InvoiceEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 3, 15, 10, 45),
+                "piotr.mazur",
+                "InvoiceNumber",
+                null,
+                "FV/03/44"),
+            new AuditLogEntry(
+                "audit-019",
+                "321",
+                "invoice-321-1",
+                AuditEntityType.InvoiceEntity,
+                AuditChangeType.Deleted,
+                AtUtc(2026, 3, 20, 8, 30),
+                "piotr.mazur",
+                "InvoiceNumber",
+                "FV/03/44",
+                null),
+            new AuditLogEntry(
+                "audit-020",
+                "321",
+                "contract-321",
+                AuditEntityType.ContractHeaderEntity,
+                AuditChangeType.Modified,
+                AtUtc(2026, 3, 28, 15, 5),
+                "alicja.kaczmarek",
+                "ContractValue",
+                "98 000 PLN",
+                "102 000 PLN"),
+            new AuditLogEntry(
+                "audit-021",
+                "321",
+                "file-321-2",
+                AuditEntityType.FileEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 4, 1, 11, 15),
+                "marta.zielinska",
+                "FileName",
+                null,
+                "korekta-faktury.pdf"),
+            new AuditLogEntry(
+                "audit-022",
+                "654",
+                "contract-654",
+                AuditEntityType.ContractHeaderEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 4, 9, 13, 45),
+                "tomasz.wojcik",
+                "Status",
+                null,
+                "Podpisana"),
+            new AuditLogEntry(
+                "audit-023",
+                "654",
+                "funding-654-1",
+                AuditEntityType.ContractFundingEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 4, 10, 9, 20),
+                "tomasz.wojcik",
+                "FundingSource",
+                null,
+                "Program regionalny"),
+            new AuditLogEntry(
+                "audit-024",
+                "654",
+                "funding-654-1",
+                AuditEntityType.ContractFundingEntity,
+                AuditChangeType.Modified,
+                AtUtc(2026, 5, 6, 14, 35),
+                "marta.zielinska",
+                "FundingSource",
+                "Program regionalny",
+                "Program regionalny + wkład własny"),
+            new AuditLogEntry(
+                "audit-025",
+                "654",
+                "payment-654-1",
+                AuditEntityType.PaymentScheduleEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 5, 12, 8, 55),
+                "anna.nowak",
+                "DueDate",
+                null,
+                "2026-06-30"),
+            new AuditLogEntry(
+                "audit-026",
+                "654",
+                "payment-654-1",
+                AuditEntityType.PaymentScheduleEntity,
+                AuditChangeType.Modified,
+                AtUtc(2026, 6, 3, 17, 5),
+                "anna.nowak",
+                "Amount",
+                "45 000 PLN",
+                "42 000 PLN"),
+            new AuditLogEntry(
+                "audit-027",
+                "654",
+                "file-654-3",
+                AuditEntityType.FileEntity,
+                AuditChangeType.Deleted,
+                AtUtc(2026, 6, 6, 10, 10),
+                "jan.kowalski",
+                "FileName",
+                "stary-kosztorys.xlsx",
+                null),
+            new AuditLogEntry(
+                "audit-028",
+                "987",
+                "contract-987",
+                AuditEntityType.ContractHeaderEntity,
+                AuditChangeType.Added,
+                AtUtc(2025, 12, 16, 9, 0),
+                "legacy.import",
+                "Status",
+                null,
+                "Zaimportowana"),
+            new AuditLogEntry(
+                "audit-029",
+                "987",
+                "contract-987",
+                AuditEntityType.ContractHeaderEntity,
+                AuditChangeType.Modified,
+                AtUtc(2025, 12, 20, 12, 40),
+                "karol.lis",
+                "ContractorName",
+                "Transport Miejski",
+                "Transport Miejski S.A."),
+            new AuditLogEntry(
+                "audit-030",
+                "987",
+                "payment-987-1",
+                AuditEntityType.PaymentScheduleEntity,
+                AuditChangeType.Modified,
+                AtUtc(2026, 1, 8, 15, 30),
+                "anna.nowak",
+                "DueDate",
+                "2026-01-15",
+                "2026-01-22"),
+            new AuditLogEntry(
+                "audit-031",
+                "987",
+                "invoice-987-1",
+                AuditEntityType.InvoiceEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 1, 12, 11, 5),
+                "piotr.mazur",
+                "InvoiceNumber",
+                null,
+                "FV/01/08"),
+            new AuditLogEntry(
+                "audit-032",
+                "222",
+                "contract-222",
+                AuditEntityType.ContractHeaderEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 7, 1, 8, 35),
+                "barbara.lewandowska",
+                "Status",
+                null,
+                "W realizacji"),
+            new AuditLogEntry(
+                "audit-033",
+                "222",
+                "annex-222-1",
+                AuditEntityType.AnnexHeaderEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 7, 10, 10, 0),
+                "barbara.lewandowska",
+                "AnnexNumber",
+                null,
+                "AN-2/2026"),
+            new AuditLogEntry(
+                "audit-034",
+                "222",
+                "annex-change-222-1",
+                AuditEntityType.AnnexChangeEntity,
+                AuditChangeType.Modified,
+                AtUtc(2026, 7, 18, 14, 15),
+                "marta.zielinska",
+                "ContractValue",
+                "210 000 PLN",
+                "205 000 PLN"),
+            new AuditLogEntry(
+                "audit-035",
+                "222",
+                "file-222-1",
+                AuditEntityType.FileEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 7, 20, 16, 20),
+                "jan.kowalski",
+                "FileName",
+                null,
+                "protokol-odbioru.pdf"),
+            new AuditLogEntry(
+                "audit-036",
+                "222",
+                "invoice-222-1",
+                AuditEntityType.InvoiceEntity,
+                AuditChangeType.Modified,
+                AtUtc(2026, 8, 2, 9, 45),
+                "piotr.mazur",
+                "InvoiceNumber",
+                "FV/08/02",
+                "FV/08/02-KOR"),
+            new AuditLogEntry(
+                "audit-037",
+                "333",
+                "contract-333",
+                AuditEntityType.ContractHeaderEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 8, 3, 11, 20),
+                "barbara.lewandowska",
+                "Status",
+                null,
+                "Przygotowana"),
+            new AuditLogEntry(
+                "audit-038",
+                "333",
+                "payment-333-1",
+                AuditEntityType.PaymentScheduleEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 8, 4, 13, 5),
+                "anna.nowak",
+                "DueDate",
+                null,
+                "2026-09-15"),
+            new AuditLogEntry(
+                "audit-039",
+                "333",
+                "funding-333-1",
+                AuditEntityType.ContractFundingEntity,
+                AuditChangeType.Added,
+                AtUtc(2026, 8, 5, 10, 10),
+                "tomasz.wojcik",
+                "FundingSource",
+                null,
+                "Budżet obywatelski"),
+            new AuditLogEntry(
+                "audit-040",
+                "333",
+                "funding-333-1",
+                AuditEntityType.ContractFundingEntity,
+                AuditChangeType.Deleted,
+                AtUtc(2026, 8, 18, 12, 0),
+                "tomasz.wojcik",
+                "FundingSource",
+                "Budżet obywatelski",
+                null),
+            new AuditLogEntry(
+                "audit-041",
+                "333",
+                "file-333-1",
+                AuditEntityType.FileEntity,
+                AuditChangeType.Modified,
+                AtUtc(2026, 9, 1, 15, 25),
+                "jan.kowalski",
+                "FileName",
+                "projekt-umowy.docx",
+                "projekt-umowy-final.docx"),
+            new AuditLogEntry(
+                "audit-042",
+                "333",
+                "legacy-333-1",
+                AuditEntityType.Unknown,
+                AuditChangeType.Modified,
+                AtUtc(2026, 9, 4, 8, 10),
+                "legacy.import",
+                "LegacyFlag",
+                "X",
+                "Y"),
+            new AuditLogEntry(
+                "audit-007",
+                "UNKNOWN",
+                "legacy-1",
+                AuditEntityType.Unknown,
+                AuditChangeType.Modified,
+                AtUtc(2026, 3, 6, 8, 0),
+                "legacy.import",
+                "LegacyField",
+                "A",
+                "B")
+        };
+
+        var seedContractIds = contracts.Select(contract => contract.ContractId).ToArray();
+        var existingContractIds = await _dbContext.Contracts
+            .Where(contract => seedContractIds.Contains(contract.ContractId))
+            .Select(contract => contract.ContractId)
+            .ToListAsync(cancellationToken);
+        var missingContracts = contracts
+            .Where(contract => !existingContractIds.Contains(contract.ContractId, StringComparer.Ordinal))
+            .ToArray();
+
+        var seedEntryIds = entries.Select(entry => entry.Id).ToArray();
+        var existingEntryIds = await _dbContext.AuditLogEntries
+            .Where(entry => seedEntryIds.Contains(entry.Id))
+            .Select(entry => entry.Id)
+            .ToListAsync(cancellationToken);
+        var missingEntries = entries
+            .Where(entry => !existingEntryIds.Contains(entry.Id, StringComparer.Ordinal))
+            .ToArray();
+
+        if (missingContracts.Length == 0 && missingEntries.Length == 0)
+        {
+            return;
+        }
+
+        await _dbContext.Contracts.AddRangeAsync(missingContracts, cancellationToken);
+        await _dbContext.AuditLogEntries.AddRangeAsync(missingEntries, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    private static DateTimeOffset AtUtc(int year, int month, int day, int hour, int minute)
+    {
+        return new DateTimeOffset(year, month, day, hour, minute, 0, TimeSpan.Zero);
+    }
+}

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Publink.AuditTimeline.Application\Publink.AuditTimeline.Application.csproj" />
+    <ProjectReference Include="..\Publink.AuditTimeline.Infrastructure\Publink.AuditTimeline.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
