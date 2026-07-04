@@ -1,0 +1,8 @@
+.git/
+**/bin/
+**/obj/
+src/frontend/node_modules/
+src/frontend/dist/
+src/frontend/.vite/
+*.tsbuildinfo
+docs/**/*.png
