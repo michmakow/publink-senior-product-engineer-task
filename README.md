@@ -10,7 +10,7 @@ Dostępne źródło danych: istniejący `AuditLog`.
 
 Celem rozwiązania nie jest zbudowanie kompletnej platformy audytowej, tylko dostarczenie małego MVP, które pomaga skarbnikowi przygotować się do kontroli.
 
-\---
+---
 
 ## Główna decyzja produktowa
 
@@ -20,7 +20,7 @@ Nie buduję pełnego Event Sourcingu, GraphQL, mikroserwisu ani LLM, ponieważ t
 
 > Czy skarbnik potrafi znaleźć odpowiedź „kto, kiedy i co zmienił?” w mniej niż minutę?
 
-\---
+---
 
 ## Uruchomienie aplikacji
 
@@ -130,13 +130,23 @@ SQL Server w Docker Compose jest wystawiony wyłącznie na `127.0.0.1:1433`; dom
 
 ---
 
+## Proponowana ścieżka przeglądu
+
+Jeśli masz mało czasu, zapoznaj się z następującymi informacjami:
+
+1. README.md
+2. docs/implementation-report.md
+3. docs/17-delivery-plan.md
+4. docs/18-what-i-did-not-build.md
+5. docs/adr/ADR-0002-existing-auditlog-vs-event-sourcing.md
+
 ## Jak czytać dokumentację
 
 Dokumentacja jest ułożona tak, aby pokazać tok myślenia od produktu do architektury:
 
 1. [Executive Summary](docs/00-executive-summary.md)
 2. [Problem Discovery](docs/01-problem-discovery.md)
-3. [User Story \& Journey](docs/02-user-story-and-journey.md)
+3. [User Story & Journey](docs/02-user-story-and-journey.md)
 4. [Opportunity Solution Tree](docs/03-opportunity-solution-tree.md)
 5. [MVP Definition](docs/04-mvp-definition.md)
 6. [Success Metrics](docs/05-success-metrics.md)
@@ -154,6 +164,7 @@ Dokumentacja jest ułożona tak, aby pokazać tok myślenia od produktu do archi
 18. [Delivery Plan](docs/17-delivery-plan.md)
 19. [What I Did Not Build](docs/18-what-i-did-not-build.md)
 20. [MVP Delivery Breakdown](docs/19-mvp-delivery-breakdown.md)
+21. [Implementation Report](docs/implementation-report.md)
 
 ADR-y:
 
@@ -163,7 +174,7 @@ ADR-y:
 * [ADR-0004: Deterministic Summary vs LLM](docs/adr/ADR-0004-deterministic-summary-vs-llm.md)
 * [ADR-0005: Modular Boundary vs Microservice](docs/adr/ADR-0005-modular-boundary-vs-microservice.md)
 
-\---
+---
 
 ## MVP scope
 
@@ -189,7 +200,7 @@ ADR-y:
 * Zaawansowane wyszukiwanie pełnotekstowe.
 * Cross-module audit dla Podatków i Dotacji.
 
-\---
+---
 
 ## Najważniejsza zasada
 
