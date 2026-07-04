@@ -6,6 +6,7 @@ interface ContractSearchProps {
   contractId: string;
   filters: AuditFilters;
   isLoading: boolean;
+  canSubmit: boolean;
   onChange: (contractId: string) => void;
   onFiltersChange: (filters: AuditFilters) => void;
   onReset: () => void;
@@ -16,6 +17,7 @@ export function ContractSearch({
   contractId,
   filters,
   isLoading,
+  canSubmit,
   onChange,
   onFiltersChange,
   onReset,
@@ -33,6 +35,10 @@ export function ContractSearch({
       className="search-bar"
       onSubmit={(event) => {
         event.preventDefault();
+        if (!canSubmit || isLoading) {
+          return;
+        }
+
         onSubmit();
       }}
     >
@@ -113,7 +119,7 @@ export function ContractSearch({
         </label>
       </fieldset>
       <div className="contract-search-actions">
-        <button type="submit" className="contract-search-button" disabled={isLoading}>
+        <button type="submit" className="contract-search-button" disabled={isLoading || !canSubmit}>
           <Search size={18} aria-hidden="true" />
           Szukaj
         </button>

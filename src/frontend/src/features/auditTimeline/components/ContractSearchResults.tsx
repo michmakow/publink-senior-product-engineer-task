@@ -1,10 +1,7 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import type {
-  AuditTimelineResponse,
-  ContractAuditSearchItem,
-  ContractAuditSearchResponse
-} from "../types";
+import type { ContractAuditSearchItem, ContractAuditSearchResponse } from "../types";
+import type { AuditTimelineDetailsByContractId } from "../hooks/useAuditTimelineDetails";
 import { formatDateOnly } from "../format";
 import { DetailedAuditSummary } from "./DetailedAuditSummary";
 import { EventCarousel } from "./EventCarousel";
@@ -14,28 +11,28 @@ const sliderMax = 1000;
 
 interface ContractSearchResultsProps {
   data: ContractAuditSearchResponse;
-  detailData: AuditTimelineResponse | null;
-  detailError: string | null;
-  expandedContractId: string | null;
+  detailsByContractId: AuditTimelineDetailsByContractId;
+  expandedContractIds: string[];
   filtersApplied: boolean;
-  isDetailLoading: boolean;
-  selectedTimelineIndex: number;
+  selectedTimelineIndexes: Record<string, number>;
   onSelectContract: (contractId: string) => void;
-  onSelectTimelineItem: (index: number) => void;
+  onSelectTimelineItem: (contractId: string, index: number) => void;
 }
 
 export function ContractSearchResults({
   data,
-  detailData,
-  detailError,
-  expandedContractId,
+  detailsByContractId,
+  expandedContractIds,
   filtersApplied,
-  isDetailLoading,
-  selectedTimelineIndex,
+  selectedTimelineIndexes,
   onSelectContract,
   onSelectTimelineItem
 }: ContractSearchResultsProps) {
   const bounds = useMemo(() => getDateBounds(data.contracts), [data.contracts]);
+  const expandedContractIdSet = useMemo(
+    () => new Set(expandedContractIds),
+    [expandedContractIds]
+  );
   const [range, setRange] = useState(bounds);
 
   useEffect(() => {
@@ -150,7 +147,12 @@ export function ContractSearchResults({
 
       <div className="contract-result-list">
         {visibleContracts.map((contract) => {
-          const isExpanded = expandedContractId === contract.contractId;
+          const detailState = detailsByContractId[contract.contractId];
+          const detailData = detailState?.data ?? null;
+          const detailError = detailState?.error ?? null;
+          const isDetailLoading = detailState?.status === "loading";
+          const isExpanded = expandedContractIdSet.has(contract.contractId);
+          const selectedTimelineIndex = selectedTimelineIndexes[contract.contractId] ?? 0;
           const hasLoadedDetail = detailData?.contractId === contract.contractId;
           const detailItems = hasLoadedDetail
             ? [...detailData.items].sort(
@@ -201,7 +203,7 @@ export function ContractSearchResults({
                         embedded
                         items={detailItems}
                         selectedIndex={selectedTimelineIndex}
-                        onSelect={onSelectTimelineItem}
+                        onSelect={(index) => onSelectTimelineItem(contract.contractId, index)}
                       />
                       <DetailedAuditSummary embedded data={detailData} items={detailItems} />
                     </>

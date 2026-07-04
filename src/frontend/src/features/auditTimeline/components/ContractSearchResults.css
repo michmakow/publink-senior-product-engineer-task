@@ -179,8 +179,8 @@
 }
 
 .contract-result-card.is-expanded {
-  border-color: #9fd4c9;
-  box-shadow: 0 0 0 3px #e3f3ef;
+  border-color: #106b5f;
+  box-shadow: 0 0 0 3px #dcefeb;
 }
 
 .contract-result-trigger {
@@ -201,6 +201,16 @@
 .contract-result-trigger:hover,
 .contract-result-trigger:focus-visible {
   background: #f8faf8;
+}
+
+.contract-result-card.is-expanded .contract-result-trigger {
+  background: #106b5f;
+  color: #ffffff;
+}
+
+.contract-result-card.is-expanded .contract-result-trigger:hover,
+.contract-result-card.is-expanded .contract-result-trigger:focus-visible {
+  background: #0a5b50;
 }
 
 .contract-result-trigger:focus-visible {
@@ -224,6 +234,13 @@
   font-size: 0.8rem;
 }
 
+.contract-result-card.is-expanded .contract-result-title span,
+.contract-result-card.is-expanded .contract-result-title strong,
+.contract-result-card.is-expanded .contract-result-metrics small,
+.contract-result-card.is-expanded .contract-result-metrics strong {
+  color: #ffffff;
+}
+
 .contract-result-metrics {
   display: grid;
   gap: 8px;
@@ -237,6 +254,11 @@
   display: grid;
   gap: 5px;
   padding: 9px;
+}
+
+.contract-result-card.is-expanded .contract-result-metrics span {
+  background: rgb(255 255 255 / 14%);
+  border-color: rgb(255 255 255 / 28%);
 }
 
 .contract-result-metrics small {

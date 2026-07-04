@@ -24,7 +24,7 @@ flowchart LR
     B -->|Nie| C[Timeline jednej umowy]
     B -->|Tak| D[Lista znalezionych umów]
     D --> E[Suwak, jeśli wyników jest więcej niż jeden]
-    D --> F[Rozwinięta karta umowy]
+    D --> F[Rozwinięte karty umów]
     C --> G[Aktywne zdarzenie i summary]
     F --> G
 ```
@@ -54,7 +54,8 @@ flowchart LR
 6. Filtrowanie po dacie, typie zmiany, typie encji i użytkowniku.
 7. Lista znalezionych umów po zastosowaniu filtrów.
 8. Warunkowy suwak zakresu aktywności, widoczny tylko dla przefiltrowanych wyników z więcej niż jedną umową.
-9. Rozwijane karty wyników, które pokazują timeline i pełne dane wybranej umowy.
+9. Rozwijane karty wyników, które pozwalają otworzyć wiele umów naraz.
+10. Ukrycie osi timeline, gdy wybrana umowa ma tylko jedną akcję; karta zdarzenia i summary nadal są widoczne.
 
 ---
 

@@ -60,6 +60,11 @@ Backend seeduje dane przy starcie przez EF Core:
 - `987` albo `UM-2025-099` - starsza umowa przechodząca przez granicę 2025/2026.
 - `222` albo `UM-2026-006` - umowa z aneksem, zmianą wartości, plikiem i fakturą.
 - `333` albo `UM-2026-007` - umowa z późniejszymi zmianami, usuniętym finansowaniem i wpisem legacy.
+- `444` albo `UM-2026-008` - umowa z 7 akcjami: finansowanie, harmonogram, plik, aneks i korekta wartości.
+- `555` albo `UM-2026-009` - umowa z 6 akcjami wokół faktury, płatności, pliku i zmiany statusu.
+- `666` albo `UM-2026-010` - umowa z 5 akcjami w krótkim zakresie dat, dobra do sprawdzania suwaka.
+- `777` albo `UM-2025-100` - starsza umowa z 9 akcjami przechodzącymi przez koniec roku.
+- `888` albo `UM-2026-011` - umowa z 6 akcjami i mieszanką zmian harmonogramu, finansowania, faktury oraz pliku.
 - `NO-CHANGES` albo `UM-2026-000` - umowa bez zmian, pokazuje stan pierwotny.
 - `UNKNOWN` albo `UM-2026-404` - wpis z nieznanym typem encji, sprawdza fallback etykiet.
 
@@ -73,8 +78,8 @@ Frontend pokazuje jeden roboczy ekran:
 - filtry po dacie, typie zmiany, typie obiektu i użytkowniku,
 - listę znalezionych umów, gdy użyto filtrów,
 - suwak zakresu aktywności tylko wtedy, gdy filtry zwróciły więcej niż jedną umowę,
-- klikalne karty wyników, które po rozwinięciu pokazują timeline i pełne szczegóły wybranej umowy,
-- poziomy timeline z ikonami zdarzeń,
+- klikalne karty wyników; można rozwinąć wiele umów naraz, a nagłówki otwartych kart są wyróżnione kolorem,
+- poziomy timeline z ikonami zdarzeń, ukrywany, gdy wybrana umowa ma tylko jedną akcję,
 - tooltip po hoverze albo focusie na punkcie timeline,
 - kartę aktywnego zdarzenia z datą, użytkownikiem, akcją, obiektem, polem oraz zmianą wartości,
 - szczegółową sumaryzację z licznikami oraz listą użytkowników i akcji, których dokonali,

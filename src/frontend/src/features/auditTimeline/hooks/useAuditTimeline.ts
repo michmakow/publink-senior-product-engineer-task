@@ -72,8 +72,18 @@ export function useAuditTimeline() {
     }
   }, []);
 
+  const clear = useCallback(() => {
+    requestIdRef.current += 1;
+    setState({
+      data: null,
+      error: null,
+      status: "idle"
+    });
+  }, []);
+
   return {
     ...state,
+    clear,
     load
   };
 }

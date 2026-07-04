@@ -140,6 +140,10 @@
   grid-template-columns: 52px minmax(0, 1fr) 52px;
 }
 
+.carousel-row.is-single-event {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .carousel-arrow {
   align-items: center;
   align-self: center;
@@ -293,6 +297,10 @@
 
   .carousel-row {
     grid-template-columns: 44px minmax(0, 1fr) 44px;
+  }
+
+  .carousel-row.is-single-event {
+    grid-template-columns: 1fr;
   }
 
   .carousel-arrow {

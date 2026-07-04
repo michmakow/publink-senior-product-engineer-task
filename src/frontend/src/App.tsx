@@ -4,6 +4,7 @@ import { ContractSearch } from "./features/auditTimeline/components/ContractSear
 import { ContractSearchResults } from "./features/auditTimeline/components/ContractSearchResults";
 import { DetailedAuditSummary } from "./features/auditTimeline/components/DetailedAuditSummary";
 import { EventCarousel } from "./features/auditTimeline/components/EventCarousel";
+import { useAuditTimelineDetails } from "./features/auditTimeline/hooks/useAuditTimelineDetails";
 import { useContractAuditSearch } from "./features/auditTimeline/hooks/useContractAuditSearch";
 import { useAuditTimeline } from "./features/auditTimeline/hooks/useAuditTimeline";
 import {
@@ -19,20 +20,21 @@ export default function App() {
   const [contractId, setContractId] = useState("");
   const [filters, setFilters] = useState<AuditFilters>(emptyAuditFilters);
   const [appliedFilters, setAppliedFilters] = useState<AuditFilters>(emptyAuditFilters);
-  const [expandedContractId, setExpandedContractId] = useState<string | null>(null);
+  const [expandedContractIds, setExpandedContractIds] = useState<string[]>([]);
+  const [selectedIndexesByContractId, setSelectedIndexesByContractId] = useState<
+    Record<string, number>
+  >({});
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [viewMode, setViewMode] = useState<ViewMode>("detail");
   const auditTimeline = useAuditTimeline();
+  const auditTimelineDetails = useAuditTimelineDetails();
   const contractSearch = useContractAuditSearch();
 
   const isDetailLoading = auditTimeline.status === "loading";
   const isSearchLoading = contractSearch.status === "loading";
   const isLoading = isDetailLoading || isSearchLoading;
   const appliedFiltersActive = hasAppliedFilters(appliedFilters);
-
-  useEffect(() => {
-    void auditTimeline.load("123", emptyAuditFilters);
-  }, [auditTimeline.load]);
+  const canSearch = hasSearchCriteria(contractId, filters);
 
   useEffect(() => {
     setSelectedIndex(0);
@@ -44,43 +46,77 @@ export default function App() {
   );
 
   const applySearch = () => {
+    if (!hasSearchCriteria(contractId, filters)) {
+      setAppliedFilters(emptyAuditFilters);
+      setExpandedContractIds([]);
+      setSelectedIndexesByContractId({});
+      setSelectedIndex(0);
+      setViewMode("detail");
+      contractSearch.clear();
+      auditTimeline.clear();
+      auditTimelineDetails.clear();
+      return;
+    }
+
     const filtersActive = hasAppliedFilters(filters);
     setSelectedIndex(0);
     setAppliedFilters(filtersActive ? filters : emptyAuditFilters);
 
     if (filtersActive) {
       setViewMode("results");
-      setExpandedContractId(null);
+      setExpandedContractIds([]);
+      setSelectedIndexesByContractId({});
+      auditTimelineDetails.clear();
       void contractSearch.search(contractId, filters);
       return;
     }
 
     contractSearch.clear();
     setViewMode("detail");
-    setExpandedContractId(null);
-    void auditTimeline.load(contractId.trim() || "123", emptyAuditFilters);
+    setExpandedContractIds([]);
+    setSelectedIndexesByContractId({});
+    auditTimelineDetails.clear();
+    void auditTimeline.load(contractId, emptyAuditFilters);
   };
 
   const resetSearch = () => {
     setContractId("");
     setFilters(emptyAuditFilters);
     setAppliedFilters(emptyAuditFilters);
-    setExpandedContractId(null);
+    setExpandedContractIds([]);
+    setSelectedIndexesByContractId({});
     setSelectedIndex(0);
     setViewMode("detail");
     contractSearch.clear();
-    void auditTimeline.load("123", emptyAuditFilters);
+    auditTimeline.clear();
+    auditTimelineDetails.clear();
   };
 
   const selectContract = (selectedContractId: string) => {
-    if (expandedContractId === selectedContractId) {
-      setExpandedContractId(null);
+    if (expandedContractIds.includes(selectedContractId)) {
+      setExpandedContractIds((current) =>
+        current.filter((contractId) => contractId !== selectedContractId)
+      );
       return;
     }
 
-    setExpandedContractId(selectedContractId);
-    setSelectedIndex(0);
-    void auditTimeline.load(selectedContractId, appliedFilters);
+    setExpandedContractIds((current) => [...current, selectedContractId]);
+    setSelectedIndexesByContractId((current) => ({
+      ...current,
+      [selectedContractId]: current[selectedContractId] ?? 0
+    }));
+
+    const currentDetail = auditTimelineDetails.detailsByContractId[selectedContractId];
+    if (!currentDetail || currentDetail.status === "error" || currentDetail.status === "notFound") {
+      void auditTimelineDetails.load(selectedContractId, appliedFilters);
+    }
+  };
+
+  const selectTimelineItem = (selectedContractId: string, index: number) => {
+    setSelectedIndexesByContractId((current) => ({
+      ...current,
+      [selectedContractId]: index
+    }));
   };
 
   const directError = viewMode === "detail" ? auditTimeline.error : null;
@@ -99,6 +135,7 @@ export default function App() {
         <ContractSearch
           contractId={contractId}
           filters={filters}
+          canSubmit={canSearch}
           isLoading={isLoading}
           onChange={setContractId}
           onFiltersChange={setFilters}
@@ -125,14 +162,12 @@ export default function App() {
       {viewMode === "results" && contractSearch.data && !isSearchLoading && (
         <ContractSearchResults
           data={contractSearch.data}
-          detailData={auditTimeline.data}
-          detailError={auditTimeline.error}
-          expandedContractId={expandedContractId}
+          detailsByContractId={auditTimelineDetails.detailsByContractId}
+          expandedContractIds={expandedContractIds}
           filtersApplied={appliedFiltersActive}
-          isDetailLoading={isDetailLoading}
-          selectedTimelineIndex={selectedIndex}
+          selectedTimelineIndexes={selectedIndexesByContractId}
           onSelectContract={selectContract}
-          onSelectTimelineItem={setSelectedIndex}
+          onSelectTimelineItem={selectTimelineItem}
         />
       )}
 
@@ -157,6 +192,10 @@ export default function App() {
       )}
     </main>
   );
+}
+
+function hasSearchCriteria(contractId: string, filters: AuditFilters): boolean {
+  return Boolean(contractId.trim() || hasAppliedFilters(filters));
 }
 
 function hasAppliedFilters(filters: AuditFilters): boolean {

@@ -23,7 +23,7 @@
 8. Użytkownik może zawęzić wyniki po dacie, typie zmiany, typie obiektu i użytkowniku.
 9. Po użyciu filtrów system pokazuje znalezione umowy jako klikalne karty.
 10. Jeżeli filtry zwrócą więcej niż jedną umowę, system pokazuje suwak zakresu aktywności.
-11. Po kliknięciu karty system rozwija ją i pokazuje timeline oraz szczegóły tej umowy.
+11. Użytkownik może rozwinąć wiele kart umów naraz i porównać ich szczegóły bez opuszczania wyników.
 12. Jeżeli umowa nie posiada zmian, system nie pokazuje pustego widoku, tylko jeden znacznik na timeline reprezentujący stan pierwotny / utworzenie umowy.
 13. System pokazuje czytelny komunikat po polsku, jeśli wystąpi błąd.
 14. Użytkownik może na podstawie widoku odpowiedzieć:
@@ -46,7 +46,7 @@ Suwak zakresu czasu ma inny cel: zawęża listę znalezionych umów po zastosowa
 To rozdziela dwa tryby pracy:
 
 - lista wyników pomaga znaleźć właściwą umowę,
-- rozwinięta karta umowy pokazuje timeline, aktywne zdarzenie i summary.
+- rozwinięte karty umów pokazują timeline, aktywne zdarzenie i summary; przy jednej akcji oś timeline nie jest renderowana.
 
 ```mermaid
 flowchart LR
@@ -186,7 +186,7 @@ flowchart TD
 | Karuzela zdarzeń | Pozwala szybko przejść do konkretnej zmiany |
 | Filtry | Pozwalają znaleźć umowy z konkretnym typem aktywności |
 | Suwak wyników | Zawęża listę umów tylko wtedy, gdy po filtrach jest więcej niż jeden wynik |
-| Klikalne karty umów | Pozwalają rozwinąć właściwą umowę bez opuszczania wyników |
+| Klikalne karty umów | Pozwalają rozwinąć jedną lub wiele umów bez opuszczania wyników |
 | Tooltipy na ikonach | Wyjaśniają, co reprezentuje punkt timeline |
 | Stan pierwotny | Usuwa niejednoznaczność pustego widoku |
 | Etykiety biznesowe | Użytkownik nie musi znać nazw technicznych |

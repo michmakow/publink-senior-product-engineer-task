@@ -16,14 +16,16 @@ Aktualny MVP ma jeden ekran roboczy:
 
 ```mermaid
 flowchart TD
-    A[Search: numer/ID umowy + filtry] --> B{Czy użyto filtrów?}
-    B -->|Nie| C[Timeline jednej umowy]
-    B -->|Tak| D[Lista znalezionych umów]
-    D --> E[Suwak, jeśli wyników jest więcej niż jeden]
-    D --> F[Rozwinięta karta umowy]
-    C --> G[Karta aktywnego zdarzenia]
-    F --> G
-    G --> H[Szczegółowa sumaryzacja]
+    A[Start: formularz wyszukiwania i filtrów] --> B{Czy podano kryterium?}
+    B -->|Nie| C[Szukaj zablokowane]
+    B -->|Tak| D{Czy użyto filtrów audytu?}
+    D -->|Nie| E[Timeline jednej wpisanej umowy]
+    D -->|Tak| F[Lista znalezionych umów]
+    F --> G[Pojedynczy suwak zakresu aktywności, jeśli wyników > 1]
+    F --> H[Rozwinięte karty wybranych umów]
+    E --> I[Karta aktywnego zdarzenia]
+    H --> I
+    I --> J[Szczegółowa sumaryzacja]
 ```
 
 UI nie pokazuje osobnego badge'a API key. Zabezpieczenie nagłówkiem `X-Audit-Api-Key` pozostaje detalem technicznym środowiska lokalnego.
@@ -32,18 +34,45 @@ UI nie pokazuje osobnego badge'a API key. Zabezpieczenie nagłówkiem `X-Audit-A
 
 ## Aktualny layout
 
+### Stan startowy
+
 ```text
 +------------------------------------------------------+
 | Audit Timeline MVP                                   |
 | Historia zmian na umowie                             |
 +------------------------------------------------------+
-| Numer / ID umowy: [123________________] [Szukaj]     |
+| Numer / ID umowy: [___________________] [Szukaj]     |
 | Filtry: data od/do, typ zmiany, obiekt, użytkownik   |
+| Szukaj aktywne dopiero po wpisaniu ID/numeru         |
+| albo ustawieniu co najmniej jednego filtra            |
++------------------------------------------------------+
+```
+
+W stanie startowym nie jest automatycznie ładowana żadna przykładowa umowa.
+
+### Wyniki po zastosowaniu filtrów
+
+```text
++------------------------------------------------------+
+| Wyniki                                                |
+| Znalezione umowy: 9                                   |
+|                                                      |
+| Zakres aktywności                                     |
+| 16.12.2025 - 04.09.2026                               |
+| [jeden suwak z uchwytem Od i uchwytem Do]             |
+|                                                      |
+| [UM-2026-007] [Zmiany: 6] [Użytkownicy: 5] [v]        |
+| [UM-2026-006] [Zmiany: 5] [Użytkownicy: 4] [v]        |
++------------------------------------------------------+
+```
+
+### Rozwinięte karty umów
+
+```text
 +------------------------------------------------------+
 | Wyniki po filtrach                                   |
-| [UM-2026-002] [Zmiany: 2] [Użytkownicy: 2] [v]       |
-| [UM-2026-001] [Zmiany: 3] [Użytkownicy: 2] [v]       |
-| Suwak zakresu aktywności - tylko gdy wyników > 1     |
+| [UM-2026-007] [Zmiany: 6] [Użytkownicy: 5] [^]        |
+|   Nagłówek otwartej umowy ma wyróżniony kolor         |
 +------------------------------------------------------+
 | Timeline zdarzeń umowy                               |
 |                                                      |
@@ -69,16 +98,24 @@ UI nie pokazuje osobnego badge'a API key. Zabezpieczenie nagłówkiem `X-Audit-A
 |                                                      |
 | Modyfikacje / Dodano / Usunięto                      |
 +------------------------------------------------------+
+| [UM-2026-005] [Zmiany: 6] [Użytkownicy: 4] [^]        |
+|   Druga umowa może być otwarta równocześnie           |
++------------------------------------------------------+
 ```
 
 ---
 
 ## Zachowanie timeline
 
+- Po uruchomieniu strony użytkownik widzi tylko formularz wyszukiwania i filtrów.
+- Wyszukiwanie jest zablokowane, dopóki nie wpisano numeru/ID umowy albo nie ustawiono co najmniej jednego filtra.
 - Bez filtrów użytkownik widzi bezpośrednio timeline wpisanej umowy.
 - Po zastosowaniu filtrów użytkownik widzi listę znalezionych umów.
-- Karta wyniku jest klikalna; po rozwinięciu pod spodem pokazuje timeline i szczegóły tej umowy.
+- Karty wyników są klikalne; użytkownik może otworzyć wiele umów równocześnie.
+- Nagłówki otwartych kart mają inny kolor niż zamknięte wyniki, aby łatwo odróżnić rozwinięte umowy.
 - Suwak zakresu aktywności pojawia się tylko wtedy, gdy filtry zwróciły więcej niż jedną umowę.
+- Zakres dat jest jednym suwakiem z dwoma uchwytami `Od` i `Do`, a nie dwoma osobnymi suwakami.
+- Jeżeli umowa ma tylko jedną akcję, UI nie pokazuje osi timeline ani strzałek poprzednie/następne; pokazuje kartę tej akcji i summary.
 - Każdy punkt timeline jest przyciskiem wyboru zdarzenia.
 - Ikona punktu odpowiada typowi lub obiektowi zdarzenia, np. dodanie, usunięcie, faktura, plik, finansowanie.
 - Po hoverze lub focusie punkt pokazuje tooltip z opisem akcji.
@@ -102,11 +139,15 @@ Summary jest deterministyczne. Nie używa LLM i nie dopowiada faktów spoza time
 
 ## Empty state
 
-Jeżeli nie znaleziono historii:
+Jeżeli zastosowane filtry nie zwrócą żadnej umowy:
+
+> Nie znaleziono umów
+
+Jeżeli komponent timeline otrzyma pustą listę zdarzeń:
 
 > Nie znaleziono historii zmian
 
-To jest ważniejsze niż pusta tabela, bo użytkownik musi wiedzieć, czy to błąd, czy rzeczywiście brak danych.
+Te komunikaty są ważniejsze niż pusta tabela, bo użytkownik musi wiedzieć, czy to błąd, czy rzeczywiście brak danych.
 
 Jeżeli umowa istnieje, ale nie ma późniejszych zmian, backend zwraca stan pierwotny jako pojedynczy element timeline.
 
@@ -130,20 +171,23 @@ W produkcji dodałbym correlation id błędu.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> LoadingInitial
-    LoadingInitial --> Timeline: sample contract loaded
+    [*] --> SearchOnly
+    SearchOnly --> SearchOnly: empty form submit blocked
+    SearchOnly --> LoadingDirect: user searches by contract only
+    SearchOnly --> LoadingResults: user searches with filters
     Timeline --> LoadingDirect: user searches without filters
     Timeline --> LoadingResults: user searches with filters
     LoadingDirect --> Timeline: contract found
     LoadingResults --> ResultList: contracts found
-    ResultList --> LoadingDetail: user expands contract
-    LoadingDetail --> Timeline: detail loaded inside card
-    LoadingDirect --> EmptyResult: no audit history
+    ResultList --> LoadingDetail: user expands one or more contracts
+    LoadingDetail --> ExpandedContracts: details loaded inside cards
     LoadingResults --> EmptyResult: no contracts found
+    LoadingDirect --> Error: contract not found
     LoadingDirect --> Error: API error
     LoadingResults --> Error: API error
     Timeline --> Timeline: event selected
-    Error --> Loading: retry
+    ExpandedContracts --> ExpandedContracts: event selected per contract
+    Error --> SearchOnly: reset
 ```
 
 ---
@@ -158,6 +202,6 @@ stateDiagram-v2
 
 W MVP wybieram timeline, bo skarbnik potrzebuje historii, a nie arkusza danych.
 
-Suwak zakresu czasu nie zastępuje timeline. Jest pomocniczym filtrem listy wyników i pojawia się wyłącznie po zastosowaniu filtrów, gdy znaleziono więcej niż jedną umowę. Timeline oraz karuzela zdarzeń pozostają miejscem analizy konkretnej umowy.
+Suwak zakresu czasu nie zastępuje timeline. Jest pomocniczym filtrem listy wyników i pojawia się wyłącznie po zastosowaniu filtrów, gdy znaleziono więcej niż jedną umowę. Jest jedną osią z dwoma uchwytami zakresu. Timeline oraz karuzela zdarzeń pozostają miejscem analizy konkretnej umowy.
 
 [Previous](07-api-contract.md) | [Next](09-c4-model.md)
