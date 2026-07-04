@@ -1,0 +1,81 @@
+.app-shell {
+  display: grid;
+  gap: 16px;
+  margin: 0 auto;
+  max-width: 1180px;
+  padding: 28px 18px 48px;
+}
+
+.top-band {
+  align-items: center;
+  background: #203337;
+  border-bottom: 4px solid #d89c3a;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  min-height: 118px;
+  padding: 26px;
+}
+
+.top-band h1 {
+  font-size: 2rem;
+  line-height: 1.1;
+  margin: 4px 0 0;
+}
+
+.eyebrow {
+  color: #a9d9d0;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.panel {
+  background: #ffffff;
+  border: 1px solid #d9dfdc;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgb(23 32 38 / 6%);
+}
+
+.controls-panel {
+  padding: 18px;
+}
+
+.status-banner {
+  align-items: center;
+  background: #fff4df;
+  border: 1px solid #e7ba66;
+  border-radius: 8px;
+  color: #654000;
+  display: flex;
+  font-weight: 800;
+  gap: 10px;
+  padding: 13px 16px;
+}
+
+.loading-state {
+  color: #465755;
+  font-weight: 800;
+  padding: 20px;
+}
+
+@media (max-width: 680px) {
+  .app-shell {
+    padding: 14px 10px 36px;
+  }
+
+  .top-band {
+    align-items: stretch;
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 0;
+    padding: 20px;
+  }
+
+  .top-band h1 {
+    font-size: 1.55rem;
+  }
+
+}

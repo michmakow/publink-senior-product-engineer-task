@@ -1,0 +1,101 @@
+.search-bar {
+  display: grid;
+  gap: 14px;
+}
+
+.contract-search-label {
+  color: #465755;
+  display: grid;
+  font-size: 0.84rem;
+  font-weight: 800;
+  gap: 7px;
+}
+
+.contract-search-input {
+  background: #ffffff;
+  border: 1px solid #cdd5d1;
+  border-radius: 6px;
+  color: #172026;
+  min-height: 42px;
+  padding: 0 12px;
+  width: 100%;
+}
+
+.contract-filter-panel {
+  border: 1px solid #d9dfdc;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0;
+  padding: 14px;
+}
+
+.contract-filter-panel legend {
+  color: #465755;
+  font-size: 0.84rem;
+  font-weight: 900;
+  padding: 0 6px;
+}
+
+.contract-search-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.contract-search-button {
+  align-items: center;
+  background: #106b5f;
+  border: 1px solid #106b5f;
+  border-radius: 6px;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 800;
+  gap: 8px;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+}
+
+.contract-search-button.secondary {
+  background: #ffffff;
+  border-color: #9fb0ab;
+  color: #203337;
+}
+
+.contract-search-button:hover:not(:disabled) {
+  background: #0a5b50;
+}
+
+.contract-search-button.secondary:hover:not(:disabled) {
+  background: #eef4f2;
+}
+
+.contract-search-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.contract-search-input:focus,
+.contract-search-button:focus-visible {
+  outline: 3px solid #b9e3dc;
+  outline-offset: 2px;
+}
+
+@media (max-width: 1080px) {
+  .contract-filter-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .search-bar {
+    gap: 12px;
+  }
+
+  .contract-filter-panel {
+    grid-template-columns: 1fr;
+  }
+}
